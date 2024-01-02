@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        display: grid;
+        gap: 2vh;
+        justify-content: center;
+      }
+
+      button,
+      form {
+        margin: 0 auto;
+      }
+    </style>
+    <title>API Intro</title>
+  </head>
+  <body>
+    <form>
+      <label for="search">
+        <input type="text" name="search" id="search" />
+      </label>
+      <button type="button" id="buttonSearch">Search</button>
+      <button type="button" id="buttonRefresh">Refresh Image</button>
+    </form>
+    <img src="#" alt="" />
+    <script>
+      const img = document.querySelector("img");
+      const buttonRefresh = document.querySelector("#buttonRefresh");
+      const buttonSearch = document.querySelector("#buttonSearch");
+      const searchBox = document.querySelector("#search");
+      let searchTerm = "cats";
+
+      const checkResponseCodeTwoHundred = function (response) {
+        const responseCode = response.status;
+        if (responseCode !== 200) {
+          console.log(`Error! Response code ${responseCode}`);
+        } else {
+          console.log(
+            `Success! Response code ${responseCode}, loaded GIF (pronounced JIFF) about ${searchTerm}`
+          );
+        }
+      };
+
+      const updateSearchTerm = function () {
+        const searchKey = searchBox.value;
+        if (searchKey) {
+          searchTerm = searchKey;
+        } else {
+          searchTerm = "cats";
+        }
+      };
+
+      const loadImage = function () {
+        const apiKey = "fOrJ5zH91TphzYHfR9Vbd2LNLorLAf1o";
+        fetch(
+          `https://api.giphy.com/v1/gifs/translate?api_key=${apiKey}&s=${searchTerm}`,
+          { mode: "cors" }
+        )
+          .then(function (response) {
+            checkResponseCodeTwoHundred(response);
+            return response.json();
+          })
+          .then(function (response) {
+            const image = response.data.images.original.url;
+            if (image) {
+              img.src = image;
+            } else {
+              console.log(`No images about ${searchTerm} found!`);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        buttonRefresh.innerHTML = `More ${searchTerm}`;
+        searchBox.value = "";
+      };
+
+      loadImage();
+
+      buttonSearch.addEventListener("click", () => {
+        updateSearchTerm();
+        loadImage();
+      });
+
+      buttonRefresh.addEventListener("click", () => {
+        loadImage();
+      });
+    </script>
+  </body>
+</html>
