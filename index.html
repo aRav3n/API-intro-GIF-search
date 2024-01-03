@@ -61,7 +61,7 @@
             { mode: "cors" }
           );
           const imageData = await response.json();
-          const image = await response.data.images.original.url;
+          const image = await imageData.data.images.original.url;
           if (image) {
             img.src = image;
           } else {
